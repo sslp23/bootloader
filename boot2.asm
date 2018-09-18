@@ -75,11 +75,10 @@ start:
     mov bh, 13h
     int 10h
 
-    xor dx, dx
     mov ah, 0xb
     mov bh, 0
     mov bl, 2
-    int 10h
+    int 10h     
 
     mov si, l ;comeco a printar as 4 strings
     call print_string

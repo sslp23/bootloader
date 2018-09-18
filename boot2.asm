@@ -60,7 +60,7 @@ limpatela:
         inc dh
         mov ah, 02h
         int 10h ;reposiciono o cursor em uma linha abaixo
-        cmp dh, 5
+        cmp dh, 1000
         je clean
         jmp apagalinha
     clean:
@@ -94,8 +94,8 @@ start:
     call print_string
 
     mov al, 0
-    mov cx, 10
-    mov dx, 10
+    mov cx, 100
+    mov dx, 100
     mov ah, 86h
     int 15h
 

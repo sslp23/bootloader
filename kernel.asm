@@ -51,12 +51,16 @@ game:
 	cmp al, 's'; se al for igual a 's', o player 1 n quer mais cartas
 	je p1END
 	cmp al, 'q'
-	je printaCarta2; carta do player2
+	je printaCarta2; se al for igual a 'q', printar cartas do player 2
+	cmp al, 'w'
+	je p2END
 	jmp done  
 
+;---------------------------------------- P1 -----------------------------------------------------------
 
 p1END:
 	mov bl, 6
+	jmp game
 
 printaCarta1:
 	inc bl
@@ -143,7 +147,7 @@ setN4: ;reseta a coordenada x da carta
 	inc dx
 	jmp pone4
 
-pone5: ;quarta carta do player1
+pone5: ;quinta carta do player1
 	cmp dx, 450
 	je game
 	mov ah, 0Ch
@@ -159,6 +163,113 @@ setN5: ;reseta a coordenada x da carta
 	inc dx
 	jmp pone5
 
+
+;-----------------------------------------------------END P1----------------------------------------------------
+
+p2END:
+	mov bh, 6
+	jmp game
+
+printaCarta2:
+	inc bh
+	cmp bh, 6
+	jge game
+	mov cx, 40
+	mov dx, 40
+	cmp bh, 1
+	je ptwo1
+	mov cx, 140
+	cmp bh, 2
+	je ptwo2
+	mov cx, 240
+	cmp bh, 3
+	je ptwo3
+	mov cx, 340
+	cmp bh, 4
+	je ptwo4
+	mov cx, 440
+	cmp bh, 5
+	je ptwo5
+
+ptwo1: ;primeira carta do player2
+	cmp dx, 140
+	je game
+	mov ah, 0Ch
+	mov al, 15
+	int 10h
+	inc cx
+	cmp cx, 100
+	je setC1
+	jmp ptwo1
+
+setC1: ;reseta a coordenada x da carta
+	mov cx, 40
+	inc dx
+	jmp ptwo1
+
+ptwo2: ;segunda carta do player2
+	cmp dx, 140
+	je game
+	mov ah, 0Ch
+	mov al, 15
+	int 10h
+	inc cx
+	cmp cx, 200
+	je setC2
+	jmp ptwo2
+
+setC2: ;reseta a coordenada x da carta
+	mov cx, 140
+	inc dx
+	jmp ptwo2
+
+ptwo3: ;terceira carta do player2
+	cmp dx, 140
+	je game
+	mov ah, 0Ch
+	mov al, 15
+	int 10h
+	inc cx
+	cmp cx, 300
+	je setC3
+	jmp ptwo3
+
+setC3: ;reseta a coordenada x da carta
+	mov cx, 240
+	inc dx
+	jmp ptwo3
+
+ptwo4: ;quarta carta do player2
+	cmp dx, 140
+	je game
+	mov ah, 0Ch
+	mov al, 15
+	int 10h
+	inc cx
+	cmp cx, 400
+	je setC4
+	jmp ptwo4
+
+setC4: ;reseta a coordenada x da carta
+	mov cx, 340
+	inc dx
+	jmp ptwo4
+
+ptwo5: ;quinta carta do player2
+	cmp dx, 140
+	je game
+	mov ah, 0Ch
+	mov al, 15
+	int 10h
+	inc cx
+	cmp cx, 500
+	je setC5
+	jmp ptwo5
+
+setC5: ;reseta a coordenada x da carta
+	mov cx, 440
+	inc dx
+	jmp ptwo5
 
 done:
 	jmp $

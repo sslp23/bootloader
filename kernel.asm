@@ -2,6 +2,7 @@ org 0x7e00
 jmp 0x0000:start
 
 save db 0
+c db 0
 
 putchar: ;usado pra debugar
     ;mov ah, 0x0e ;
@@ -31,6 +32,12 @@ start:
     mov bh, 0
     mov bl, 2
     int 10h
+	mov [c], al
+;	mov bl, 13
+;	div bl
+;	mov al, ah
+;	add al, 48
+;	call putchar
 
     xor bl, bl
     xor bx, bx
@@ -44,6 +51,13 @@ getchar: ; pego o comando
 
 game:
 	call getchar
+	mov cl, 10
+	add cl, bl
+	add cl, al
+	add cl, dl
+	mov cl, [c]
+	add cl, al
+	mov [c], cl
 	cmp al, 'a'; se al for igual a 'a', printar carta do player 1
 	je printaCarta1
 	cmp al, 's'; se al for igual a 's', o player 1 n quer mais cartas
@@ -53,6 +67,45 @@ game:
 	cmp al, 'w'
 	je p2END
 	jmp done  
+
+
+as:
+	mov al, 'A'
+	jmp bval
+
+king:
+	mov al, 'K'
+	jmp bval
+
+queen:
+	mov al, 'Q'
+	jmp bval
+
+jack: 
+	mov al, 'J'
+	jmp bval
+
+getval: ; "random"
+	mov al, [c]
+	rand:
+		inc al
+		cmp cl, al
+		je rand
+	mov cl, 13
+	div cl
+	div cl
+	mov al, ah
+	add al, 49
+	cmp al, 49
+	je as
+	cmp al, 59
+	je jack
+	cmp al, 60
+	je queen
+	cmp al, 61
+	je king
+	bval:
+	ret
 
 ;---------------------------------------- P1 -----------------------------------------------------------
 
@@ -106,7 +159,7 @@ p1val1: ;valor da carta
 	int 10h ;setando o cursor
 
 	mov [save], bl ;salvando o valor de bl
-	mov al, '9' ;CRIAR FUNCAO DE RANDOM P COLOCAR NUMEROS RANDOMICOS AQ
+	call getval
     call putchar ;printa primeiro numero
 
 	xor dx, dx
@@ -144,7 +197,7 @@ p1val2: ;valor da carta
 	int 10h ;setando o cursor
 
 	mov [save], bl ;salvando o valor de bl
-	mov al, '9'
+	call getval
     call putchar ;printa primeiro numero
 
 	xor dx, dx
@@ -182,7 +235,7 @@ p1val3: ;valor da carta
 	int 10h ;setando o cursor
 
 	mov [save], bl ;salvando o valor de bl
-	mov al, '9'
+	call getval
     call putchar ;printa primeiro numero
 
 	xor dx, dx
@@ -220,7 +273,7 @@ p1val4: ;valor da carta
 	int 10h ;setando o cursor
 
 	mov [save], bl ;salvando o valor de bl
-	mov al, '9'
+	call getval
     call putchar ;printa primeiro numero
 
 	xor dx, dx
@@ -258,7 +311,7 @@ p1val5: ;valor da carta
 	int 10h ;setando o cursor
 
 	mov [save], bl ;salvando o valor de bl
-	mov al, '9'
+	call getval
     call putchar ;printa primeiro numero
 
 	xor dx, dx
@@ -301,7 +354,7 @@ printaCarta2:
 
 ptwo1: ;primeira carta do player2
 	cmp dx, 140
-	je game
+	je p2val1
 	mov ah, 0Ch
 	mov al, 15
 	int 10h
@@ -315,9 +368,31 @@ setC1: ;reseta a coordenada x da carta
 	inc dx
 	jmp ptwo1
 
+p2val1: ;valor da carta
+	;call putchar
+	xor dx, dx
+	mov dh, 3
+	mov dl, 11
+	mov ah, 02h
+	int 10h ;setando o cursor
+
+	mov [save], bl ;salvando o valor de bl
+	call getval
+    call putchar ;printa primeiro numero
+
+	xor dx, dx
+	mov dh, 7
+	mov dl, 6
+	mov ah, 02h
+	int 10h
+
+	call putchar ;segunda carta
+	mov bl, [save]
+	jmp game
+
 ptwo2: ;segunda carta do player2
 	cmp dx, 140
-	je game
+	je p2val2
 	mov ah, 0Ch
 	mov al, 15
 	int 10h
@@ -331,9 +406,31 @@ setC2: ;reseta a coordenada x da carta
 	inc dx
 	jmp ptwo2
 
+p2val2: ;valor da carta
+	;call putchar
+	xor dx, dx
+	mov dh, 3
+	mov dl, 23
+	mov ah, 02h
+	int 10h ;setando o cursor
+
+	mov [save], bl ;salvando o valor de bl
+	call getval
+    call putchar ;printa primeiro numero
+
+	xor dx, dx
+	mov dh, 7
+	mov dl, 18
+	mov ah, 02h
+	int 10h
+
+	call putchar ;segunda carta
+	mov bl, [save]
+	jmp game
+
 ptwo3: ;terceira carta do player2
 	cmp dx, 140
-	je game
+	je p2val3
 	mov ah, 0Ch
 	mov al, 15
 	int 10h
@@ -347,9 +444,31 @@ setC3: ;reseta a coordenada x da carta
 	inc dx
 	jmp ptwo3
 
+p2val3: ;valor da carta
+	;call putchar
+	xor dx, dx
+	mov dh, 3
+	mov dl, 36
+	mov ah, 02h
+	int 10h ;setando o cursor
+
+	mov [save], bl ;salvando o valor de bl
+	call getval
+    call putchar ;printa primeiro numero
+
+	xor dx, dx
+	mov dh, 7
+	mov dl, 31
+	mov ah, 02h
+	int 10h
+
+	call putchar ;segunda carta
+	mov bl, [save]
+	jmp game
+
 ptwo4: ;quarta carta do player2
 	cmp dx, 140
-	je game
+	je p2val4
 	mov ah, 0Ch
 	mov al, 15
 	int 10h
@@ -363,9 +482,31 @@ setC4: ;reseta a coordenada x da carta
 	inc dx
 	jmp ptwo4
 
+p2val4: ;valor da carta
+	;call putchar
+	xor dx, dx
+	mov dh, 3
+	mov dl, 48
+	mov ah, 02h
+	int 10h ;setando o cursor
+
+	mov [save], bl ;salvando o valor de bl
+	call getval
+    call putchar ;printa primeiro numero
+
+	xor dx, dx
+	mov dh, 7
+	mov dl, 43
+	mov ah, 02h
+	int 10h
+
+	call putchar ;segunda carta
+	mov bl, [save]
+	jmp game
+
 ptwo5: ;quinta carta do player2
 	cmp dx, 140
-	je game
+	je p2val5
 	mov ah, 0Ch
 	mov al, 15
 	int 10h
@@ -378,6 +519,28 @@ setC5: ;reseta a coordenada x da carta
 	mov cx, 440
 	inc dx
 	jmp ptwo5
+
+p2val5: ;valor da carta
+	;call putchar
+	xor dx, dx
+	mov dh, 3
+	mov dl, 61
+	mov ah, 02h
+	int 10h ;setando o cursor
+
+	mov [save], bl ;salvando o valor de bl
+	call getval
+    call putchar ;printa primeiro numero
+
+	xor dx, dx
+	mov dh, 7
+	mov dl, 56
+	mov ah, 02h
+	int 10h
+
+	call putchar ;segunda carta
+	mov bl, [save]
+	jmp game
 
 done:
 	jmp $

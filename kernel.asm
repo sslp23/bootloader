@@ -1,20 +1,18 @@
 org 0x7e00
 jmp 0x0000:start
 
-x db 0
-y db 0
+save db 0
 
 putchar: ;usado pra debugar
-    mov ah, 0x0e ;
-	int 10h ; interrupção de vídeo
-	ret
-    mov dh, 5
-    mov dl, 0
-    mov ah, 02h
-    int 10h
-    mov al, 'x'
-    mov cx, 3
-    mov bl, 6
+    ;mov ah, 0x0e ;
+	;int 10h ; interrupção de vídeo
+	;ret
+   	;mov dh, 5
+    ;mov dl, 0
+    ;mov ah, 02h
+    ;int 10h
+    mov cx, 1
+    mov bl, 4
     mov ah, 09h
     int 10h
     ret
@@ -85,7 +83,7 @@ printaCarta1:
 
 pone1: ;primeira carta do player1
 	cmp dx, 450
-	je game
+	je p1val1
 	mov ah, 0Ch
 	mov al, 15
 	int 10h
@@ -99,9 +97,31 @@ setN1: ;reseta a coordenada x da primeira carta
 	inc dx
 	jmp pone1
 
+p1val1: ;valor da carta
+	;call putchar
+	xor dx, dx
+	mov dh, 22
+	mov dl, 11
+	mov ah, 02h
+	int 10h ;setando o cursor
+
+	mov [save], bl ;salvando o valor de bl
+	mov al, '9'
+    call putchar ;printa primeiro numero
+
+	xor dx, dx
+	mov dh, 27
+	mov dl, 6
+	mov ah, 02h
+	int 10h
+
+	call putchar ;segunda carta
+	mov bl, [save]
+	jmp game
+
 pone2: ;segunda carta do player1
 	cmp dx, 450
-	je game
+	je p1val2
 	mov ah, 0Ch
 	mov al, 15
 	int 10h
@@ -115,9 +135,31 @@ setN2: ;reseta a coordenada x da carta
 	inc dx
 	jmp pone2
 
+p1val2: ;valor da carta
+	;call putchar
+	xor dx, dx
+	mov dh, 22
+	mov dl, 23
+	mov ah, 02h
+	int 10h ;setando o cursor
+
+	mov [save], bl ;salvando o valor de bl
+	mov al, '9'
+    call putchar ;printa primeiro numero
+
+	xor dx, dx
+	mov dh, 27
+	mov dl, 18
+	mov ah, 02h
+	int 10h
+
+	call putchar ;segunda carta
+	mov bl, [save]
+	jmp game
+
 pone3: ;terceira carta do player1
 	cmp dx, 450
-	je game
+	je p1val3
 	mov ah, 0Ch
 	mov al, 15
 	int 10h
@@ -131,9 +173,31 @@ setN3: ;reseta a coordenada x da carta
 	inc dx
 	jmp pone3
 
+p1val3: ;valor da carta
+	;call putchar
+	xor dx, dx
+	mov dh, 22
+	mov dl, 36
+	mov ah, 02h
+	int 10h ;setando o cursor
+
+	mov [save], bl ;salvando o valor de bl
+	mov al, '9'
+    call putchar ;printa primeiro numero
+
+	xor dx, dx
+	mov dh, 27
+	mov dl, 31
+	mov ah, 02h
+	int 10h
+
+	call putchar ;segunda carta
+	mov bl, [save]
+	jmp game
+
 pone4: ;quarta carta do player1
 	cmp dx, 450
-	je game
+	je p1val4
 	mov ah, 0Ch
 	mov al, 15
 	int 10h
@@ -147,9 +211,31 @@ setN4: ;reseta a coordenada x da carta
 	inc dx
 	jmp pone4
 
+p1val4: ;valor da carta
+	;call putchar
+	xor dx, dx
+	mov dh, 22
+	mov dl, 48
+	mov ah, 02h
+	int 10h ;setando o cursor
+
+	mov [save], bl ;salvando o valor de bl
+	mov al, '9'
+    call putchar ;printa primeiro numero
+
+	xor dx, dx
+	mov dh, 27
+	mov dl, 43
+	mov ah, 02h
+	int 10h
+
+	call putchar ;segunda carta
+	mov bl, [save]
+	jmp game
+
 pone5: ;quinta carta do player1
 	cmp dx, 450
-	je game
+	je p1val5
 	mov ah, 0Ch
 	mov al, 15
 	int 10h
@@ -162,6 +248,28 @@ setN5: ;reseta a coordenada x da carta
 	mov cx, 440
 	inc dx
 	jmp pone5
+
+p1val5: ;valor da carta
+	;call putchar
+	xor dx, dx
+	mov dh, 22
+	mov dl, 61
+	mov ah, 02h
+	int 10h ;setando o cursor
+
+	mov [save], bl ;salvando o valor de bl
+	mov al, '9'
+    call putchar ;printa primeiro numero
+
+	xor dx, dx
+	mov dh, 27
+	mov dl, 56
+	mov ah, 02h
+	int 10h
+
+	call putchar ;segunda carta
+	mov bl, [save]
+	jmp game
 
 
 ;-----------------------------------------------------END P1----------------------------------------------------

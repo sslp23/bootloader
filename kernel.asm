@@ -106,7 +106,7 @@ p1val1: ;valor da carta
 	int 10h ;setando o cursor
 
 	mov [save], bl ;salvando o valor de bl
-	mov al, '9'
+	mov al, '9' ;CRIAR FUNCAO DE RANDOM P COLOCAR NUMEROS RANDOMICOS AQ
     call putchar ;printa primeiro numero
 
 	xor dx, dx

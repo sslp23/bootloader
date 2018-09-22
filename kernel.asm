@@ -7,23 +7,12 @@ p1 db 0 ;vao verificar se p1==21
 p2 db 0
 eg db 0 ;verifica se ja acabou o jogo
 
-;menu
-
-l dw '        XXXX The Black Jack Game  XXXX', 0, 0, 0
-s dw '                         XXXX   Are you ready?     XXXX', 0, 0, 0
-w dw 'P. Play', 0, 0, 0
-r dw 'I. Instructions', 0, 0, 0
-
-;instrucoes
-;instrucoes
-
-i1 dw '  Pressione A para pedir uma carta para o player 1', 0, 0, 0
-i2 dw '  Pressione S para encerrar a jogada do player 1', 0, 0, 0
-i3 dw '  Pressione Q para pedir uma carta para o player 2', 0, 0, 0
-i4 dw '  Pressione S para encerrar a jogada do player 2', 0, 0, 0
-i5 dw '  Pressione X para sair', 0, 0, 0
-i6 dw '       Instructions',0, 0, 0
-i7 dw  '  Dentro do jogo pressione M caso deseje sair', 0, 0, 0
+sp1 db 'Player 1: ', 0, 0, 0
+sp2 db 'Player 2: ', 0, 0, 0
+wp2 db 'Player 2 wins!', 0, 0, 0
+wp1 db 'Player 1 wins!', 0, 0, 0
+e db 'Its a draw!', 0, 0, 0
+rst db 'Restart? Press 1', 0, 0, 0
 
 
 print_string: ;funcao print string ja usada
@@ -32,7 +21,7 @@ print_string: ;funcao print string ja usada
     je .done
     
     mov cx, 1
-    mov bl, 7
+    mov bl, 14
     mov ah, 09h ;printo um caracter usando 09h p sair com cor
     int 10h     ;interrupção de vídeo.
 
@@ -40,168 +29,10 @@ print_string: ;funcao print string ja usada
     mov ah, 02h ;reposiciono o cursor
     int 10h
 
-    mov ah, 86h
-    int 15h
-
     jmp print_string
  
     .done:
         ret
-
-
-    plinha: ;pular uma linha
-    inc dh
-    xor dl, dl
-    mov ah, 02h
-    int 10h
-    ret
-
-limpatela:
-    mov dh, 0
-    mov dl, 0
-    mov ah, 02h ; posiciono o cursor no topo
-    int 10h
-    apagalinha:
-        mov al, 48
-        mov bl, 2
-        mov cx, 1000
-        mov ah, 09h
-        int 10h ;printo 1000 chars brancos
-        inc dh
-        mov ah, 02h
-        int 10h ;reposiciono o cursor em uma linha abaixo
-        cmp dh, 5
-        je clean
-        jmp apagalinha
-    clean:
-        ret
-
-menu: 
-		xor ax, ax
-
-		call limpatela
-
-
-		mov ah, 0
-		mov al, 12h
-		int 10h ;modo de video
-
-		xor dx, dx
-	    mov ah, 0xb
-	    mov bh, 0
-	    mov bl, 0
-	    int 10h
-
-	    mov ah, 02h
-	    mov bh, 0
-	    mov dh, 13
-	    mov dl, 17
-	    int 10h
-		
-
-		mov si, l ;comeco a printar as strings
-		call print_string
-		call plinha
-
-
-		mov si, s
-		call print_string
-		call plinha
-
-		call plinha
-		call plinha
-
-		mov si, w
-		call print_string
-		call plinha
-
-		mov si, r
-		call print_string
-		call plinha
-	
-
-		mov al, 0
-		mov cx, 100
-		mov dx, 100
-		mov ah, 86h
-		int 15h
-
-		mov ah, 0h
-		int 16h
-
-		cmp al, 'p'
-		je vaiporra
-		cmp al, 'i'
-		je instructions
-
-
-
-instructions:
-
-	xor ax, ax
-
-	call limpatela
-
-	mov ah, 0
-	mov al, 12h
-	int 10h
-
-	xor dx, dx
-	mov ah, 0xb
-    mov bh, 0
-    mov bl, 0
-	int 10h
-
-	mov ah, 02h
-	mov bh, 0
-	mov dh, 0
-	mov dl, 25
-	int 10h
-
-	mov si, i6
-	call print_string
-	call plinha
-
-	mov ah, 02h
-	mov bh, 0
-	mov dh, 1
-	mov dl, 0
-	int 10h
-
-
-	mov si, i1
-	call print_string
-	call plinha
-	
-	mov si, i2
-	call print_string
-	call plinha
-	
-	mov si, i3
-	call print_string
-	call plinha
-	
-	mov si, i4
-	call print_string
-	call plinha
-
-	mov si, i7
-	call print_string
-	call plinha
-
-	call plinha
-
-	mov si, i5
-	call print_string
-	call plinha
-
-	mov ah, 0h
-	int 16h
-
-	cmp al, 'x'
-	je start
-
-
 
 
 putchar: ;usado pra debugar
@@ -223,7 +54,7 @@ ident: ;printar o 10
     mov bl, 4
     mov ah, 09h
     int 10h
-    inc dl
+    inc dl ;aqqa
     mov ah, 02h
     int 10h
     mov al, '0'
@@ -231,54 +62,66 @@ ident: ;printar o 10
     mov bl, 4
     mov ah, 09h
     int 10h
+    mov al, 58
     jmp bid
-
-
 
 start:
 	xor ax, ax
 	mov ds, ax
 	mov es, ax
+	xor bx, bx
 
-	call menu
-
-vaiporra:
-	
-	call limpatela
+	mov [c], al
+    restart:
 	mov ah, 0
 	mov al, 12h
 	int 10h ;modo de video
+
+	mov [p1], ah
+    mov [p2], ah
 
 	xor dx, dx
     mov ah, 0xb
     mov bh, 0
     mov bl, 2
     int 10h
-	mov [c], al
-;	mov bl, 13
-;	div bl
-;	mov al, ah
-;	add al, 48
-;	call putchar
+    mov al, [c]
+    add al, al
+    mov [c], al
 
+	mov dh, 10
+	mov dl, 0
+	mov ah, 02h
+	int 10h
+	mov si, sp2
+	call print_string
+	mov dh, 19
+	mov dl, 0
+	mov ah, 02h
+	int 10h
+	mov si, sp1
+	call print_string
+
+	xor dx, dx
+    xor cx, cx
     xor bl, bl
-    mov [p1], bl
-    mov [p2], bl
     xor bx, bx
     jmp game
 	jmp done
-
 
 getchar: ; pego o comando
 	mov ah, 0h
 	int 16h
 	ret
 
+;---------------------------------------------------tabuleiro-----------------------------
+
+;----------------------------------------------------------------------------------------------------
 scoreUpdateP1:;printa o score do P1
 	mov cx, 1
 	mov [save], bl
 	mov dh, 19
-    mov dl, 0
+    mov dl, 10
     mov ah, 02h
     int 10h;posicionando o cursor
     
@@ -311,7 +154,7 @@ scoreUpdateP2:;printa o score do P2
 	mov cx, 1
 	mov [save], bl
 	mov dh, 10
-    mov dl, 0
+    mov dl, 10
     mov ah, 02h
     int 10h;posicionando o cursor
     
@@ -341,8 +184,6 @@ scoreUpdateP2:;printa o score do P2
    	ret
 
 game:
-	
-
 	call scoreUpdateP1
 	call scoreUpdateP2
 	xor cl, cl
@@ -366,14 +207,7 @@ game:
 	je printaCarta2; se al for igual a 'q', printar cartas do player 2
 	cmp al, 'w'
 	je p2END
-
-	mov ah, 0h
-	int 16h
-
-	cmp al, 'm'
-	je menu
-
-	jmp done  
+	jmp game 
 
 
 as:
@@ -909,23 +743,44 @@ p2val5: ;valor da carta
 
 ;-------------------------------------------------END P2------------------------------------------
 
-p1WIN:
-	mov dh, 0
+reset:
+	mov dh, 29
 	mov dl, 0
 	mov ah, 02h
 	int 10h
-	mov al, '1'
-	call putchar
-	jmp done
+	mov si, rst
+	call print_string
+	call getchar
+	cmp al, '1'
+	je restart
+	jmp reset
+
+p1WIN:
+	mov dh, 15
+	mov dl, 32
+	mov ah, 02h
+	int 10h
+	mov si, wp1
+	call print_string
+	jmp reset
 
 p2WIN:
-	mov dh, 0
-	mov dl, 0
+	mov dh, 15
+	mov dl, 32
 	mov ah, 02h
 	int 10h
-	mov al, '0'
-	call putchar
-	jmp done
+	mov si, wp2
+	call print_string
+	jmp reset
+
+draw:
+	mov dh, 15
+	mov dl, 34
+	mov ah, 02h
+	int 10h
+	mov si, e
+	call print_string
+	jmp reset
 
 mod1:
 	mov cl, 21
@@ -959,6 +814,7 @@ endgame:
 	cmp al, ah
 	jg p1WIN
 	jl p2WIN
+	je draw
 	jmp done
 
 done:

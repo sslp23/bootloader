@@ -3,20 +3,38 @@ jmp 0x0000:start
 
 save db 0
 c db 0
+p1 db 0 ;vao verificar se p1==21
+p2 db 0
+eg db 0 ;verifica se ja acabou o jogo
 
 putchar: ;usado pra debugar
-    ;mov ah, 0x0e ;
-	;int 10h ; interrupção de vídeo
-	;ret
-   	;mov dh, 5
-    ;mov dl, 0
-    ;mov ah, 02h
-    ;int 10h
+    cmp al, 58
+    je ident
     mov cx, 1
     mov bl, 4
     mov ah, 09h
     int 10h
+    bid:
     ret
+
+ident: ;printar o 10
+	sub dl, 1
+	mov ah, 02h
+	int 10h
+	mov al, '1'
+	mov cx, 1
+    mov bl, 4
+    mov ah, 09h
+    int 10h
+    inc dl
+    mov ah, 02h
+    int 10h
+    mov al, '0'
+    mov cx, 1
+    mov bl, 4
+    mov ah, 09h
+    int 10h
+    jmp bid
 
 start:
 	xor ax, ax
@@ -40,6 +58,8 @@ start:
 ;	call putchar
 
     xor bl, bl
+    mov [p1], bl
+    mov [p2], bl
     xor bx, bx
     jmp game
 	jmp done
@@ -49,7 +69,80 @@ getchar: ; pego o comando
 	int 16h
 	ret
 
+scoreUpdateP1:;printa o score do P1
+	mov cx, 1
+	mov [save], bl
+	mov dh, 19
+    mov dl, 0
+    mov ah, 02h
+    int 10h;posicionando o cursor
+    
+    xor ax, ax
+    mov al, [p1]
+    mov cl, 10
+    div cl ;divindo al
+    mov cx, 1
+
+    mov [eg], ah
+    mov bl, 14
+    add al, 48
+   	mov ah, 09h
+   	int 10h ;printando
+
+   	mov al, [eg]
+   	inc dl
+   	mov ah, 02h
+   	int 10h;reposicionando o cursor
+   	mov cx, 1
+
+   	mov bl, 14
+   	add al, 48
+   	mov ah, 09h
+   	int 10h ;printando
+   	mov bl, [save]
+   	ret
+
+scoreUpdateP2:;printa o score do P2
+	mov cx, 1
+	mov [save], bl
+	mov dh, 10
+    mov dl, 0
+    mov ah, 02h
+    int 10h;posicionando o cursor
+    
+    xor ax, ax
+    mov al, [p2]
+    mov cl, 10
+    div cl ;divindo al
+    mov cx, 1
+
+    mov [eg], ah
+    mov bl, 14
+    add al, 48
+   	mov ah, 09h
+   	int 10h ;printando
+
+   	mov al, [eg]
+   	inc dl
+   	mov ah, 02h
+   	int 10h;reposicionando o cursor
+   	mov cx, 1
+
+   	mov bl, 14
+   	add al, 48
+   	mov ah, 09h
+   	int 10h ;printando
+   	mov bl, [save]
+   	ret
+
 game:
+	call scoreUpdateP1
+	call scoreUpdateP2
+	xor cl, cl
+	add cl, bl
+	add cl, bh
+	cmp cl, 12
+	je endgame
 	call getchar
 	mov cl, 10
 	add cl, bl
@@ -95,7 +188,13 @@ getval: ; "random"
 	div cl
 	div cl
 	mov al, ah
-	add al, 49
+	add al, 1
+	cmp bl, 0
+	je addp1
+	cmp bl, 1
+	je addp2
+	badd:
+	add al, 48
 	cmp al, 49
 	je as
 	cmp al, 59
@@ -107,16 +206,28 @@ getval: ; "random"
 	bval:
 	ret
 
+addp1:
+	mov cl, [p1]
+	add cl, al
+	mov [p1], cl
+	jmp badd
+
+addp2:
+	mov cl, [p2]
+	add cl, al
+	mov [p2], cl
+	jmp badd
+
 ;---------------------------------------- P1 -----------------------------------------------------------
 
 p1END:
-	mov bl, 6
+	mov bl, 6  
 	jmp game
 
 printaCarta1:
-	inc bl
-	cmp bl, 6
+	cmp bl, 5
 	jge game ;se ele ja recebeu 5 cartas, n pode mais receber carta
+	inc bl
 	mov cx, 40
 	mov dx, 350 ;coordenadas da primeira carta
 	cmp bl, 1 ;comparacao p ver qual carta tem q ser printada
@@ -159,6 +270,7 @@ p1val1: ;valor da carta
 	int 10h ;setando o cursor
 
 	mov [save], bl ;salvando o valor de bl
+	mov bl, 0
 	call getval
     call putchar ;printa primeiro numero
 
@@ -170,6 +282,9 @@ p1val1: ;valor da carta
 
 	call putchar ;segunda carta
 	mov bl, [save]
+	mov al, [p1]
+	cmp al, 21
+	jge p1END
 	jmp game
 
 pone2: ;segunda carta do player1
@@ -197,6 +312,7 @@ p1val2: ;valor da carta
 	int 10h ;setando o cursor
 
 	mov [save], bl ;salvando o valor de bl
+	mov bl, 0
 	call getval
     call putchar ;printa primeiro numero
 
@@ -208,6 +324,9 @@ p1val2: ;valor da carta
 
 	call putchar ;segunda carta
 	mov bl, [save]
+	mov al, [p1]
+	cmp al, 21
+	jge p1END
 	jmp game
 
 pone3: ;terceira carta do player1
@@ -235,6 +354,7 @@ p1val3: ;valor da carta
 	int 10h ;setando o cursor
 
 	mov [save], bl ;salvando o valor de bl
+	mov bl, 0
 	call getval
     call putchar ;printa primeiro numero
 
@@ -246,6 +366,9 @@ p1val3: ;valor da carta
 
 	call putchar ;segunda carta
 	mov bl, [save]
+	mov al, [p1]
+	cmp al, 21
+	jge p1END
 	jmp game
 
 pone4: ;quarta carta do player1
@@ -273,6 +396,7 @@ p1val4: ;valor da carta
 	int 10h ;setando o cursor
 
 	mov [save], bl ;salvando o valor de bl
+	mov bl, 0
 	call getval
     call putchar ;printa primeiro numero
 
@@ -284,6 +408,9 @@ p1val4: ;valor da carta
 
 	call putchar ;segunda carta
 	mov bl, [save]
+	mov al, [p1]
+	cmp al, 21
+	jge p1END
 	jmp game
 
 pone5: ;quinta carta do player1
@@ -311,6 +438,7 @@ p1val5: ;valor da carta
 	int 10h ;setando o cursor
 
 	mov [save], bl ;salvando o valor de bl
+	mov bl, 0
 	call getval
     call putchar ;printa primeiro numero
 
@@ -322,6 +450,9 @@ p1val5: ;valor da carta
 
 	call putchar ;segunda carta
 	mov bl, [save]
+	mov al, [p1]
+	cmp al, 21
+	jge p1END
 	jmp game
 
 
@@ -332,9 +463,9 @@ p2END:
 	jmp game
 
 printaCarta2:
-	inc bh
-	cmp bh, 6
+	cmp bh, 5
 	jge game
+	inc bh
 	mov cx, 40
 	mov dx, 40
 	cmp bh, 1
@@ -377,6 +508,7 @@ p2val1: ;valor da carta
 	int 10h ;setando o cursor
 
 	mov [save], bl ;salvando o valor de bl
+	mov bl, 1
 	call getval
     call putchar ;printa primeiro numero
 
@@ -388,6 +520,9 @@ p2val1: ;valor da carta
 
 	call putchar ;segunda carta
 	mov bl, [save]
+	mov al, [p2]
+	cmp al, 21
+	jge p2END
 	jmp game
 
 ptwo2: ;segunda carta do player2
@@ -415,6 +550,7 @@ p2val2: ;valor da carta
 	int 10h ;setando o cursor
 
 	mov [save], bl ;salvando o valor de bl
+	mov bl, 1
 	call getval
     call putchar ;printa primeiro numero
 
@@ -426,6 +562,9 @@ p2val2: ;valor da carta
 
 	call putchar ;segunda carta
 	mov bl, [save]
+	mov al, [p2]
+	cmp al, 21
+	jge p2END
 	jmp game
 
 ptwo3: ;terceira carta do player2
@@ -453,6 +592,7 @@ p2val3: ;valor da carta
 	int 10h ;setando o cursor
 
 	mov [save], bl ;salvando o valor de bl
+	mov bl, 1
 	call getval
     call putchar ;printa primeiro numero
 
@@ -464,6 +604,9 @@ p2val3: ;valor da carta
 
 	call putchar ;segunda carta
 	mov bl, [save]
+	mov al, [p2]
+	cmp al, 21
+	jge p2END
 	jmp game
 
 ptwo4: ;quarta carta do player2
@@ -491,6 +634,7 @@ p2val4: ;valor da carta
 	int 10h ;setando o cursor
 
 	mov [save], bl ;salvando o valor de bl
+	mov bl, 1
 	call getval
     call putchar ;printa primeiro numero
 
@@ -502,6 +646,9 @@ p2val4: ;valor da carta
 
 	call putchar ;segunda carta
 	mov bl, [save]
+	mov al, [p2]
+	cmp al, 21
+	jge p2END
 	jmp game
 
 ptwo5: ;quinta carta do player2
@@ -529,6 +676,7 @@ p2val5: ;valor da carta
 	int 10h ;setando o cursor
 
 	mov [save], bl ;salvando o valor de bl
+	mov bl, 1
 	call getval
     call putchar ;printa primeiro numero
 
@@ -540,7 +688,64 @@ p2val5: ;valor da carta
 
 	call putchar ;segunda carta
 	mov bl, [save]
+	mov al, [p2]
+	cmp al, 21
+	jge p2END
 	jmp game
+
+;-------------------------------------------------END P2------------------------------------------
+
+p1WIN:
+	mov dh, 0
+	mov dl, 0
+	mov ah, 02h
+	int 10h
+	mov al, '1'
+	call putchar
+	jmp done
+
+p2WIN:
+	mov dh, 0
+	mov dl, 0
+	mov ah, 02h
+	int 10h
+	mov al, '0'
+	call putchar
+	jmp done
+
+mod1:
+	mov cl, 21
+	sub al, cl
+	mov [p1], al
+	jmp back1
+
+mod2:
+	mov cl, 21
+	sub al, cl
+	mov [p2], al
+	jmp back2
+
+endgame:
+	mov al, [p1]
+	cmp al, 21
+	jg mod1
+	mov cl, 21
+	sub cl, al
+	mov [p1], cl
+	back1:
+	cmp al, 21
+	jg mod2
+	mov al, [p2]
+	mov cl, 21
+	sub cl, al
+	mov [p2], cl
+	back2:
+	mov al, [p2]
+	mov ah, [p1]
+	cmp al, ah
+	jg p1WIN
+	jl p2WIN
+	jmp done
 
 done:
 	jmp $

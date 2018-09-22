@@ -501,7 +501,7 @@ p1val5: ;valor da carta
 	mov al, [p1]
 	cmp al, 21
 	jge p1END
-	jmp game
+	jmp p2END
 
 
 ;-----------------------------------------------------END P1----------------------------------------------------
@@ -739,7 +739,7 @@ p2val5: ;valor da carta
 	mov al, [p2]
 	cmp al, 21
 	jge p2END
-	jmp game
+	jmp p2END
 
 ;-------------------------------------------------END P2------------------------------------------
 
@@ -802,9 +802,9 @@ endgame:
 	sub cl, al
 	mov [p1], cl
 	back1:
+	mov al, [p2]
 	cmp al, 21
 	jg mod2
-	mov al, [p2]
 	mov cl, 21
 	sub cl, al
 	mov [p2], cl

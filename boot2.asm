@@ -11,7 +11,7 @@ print_string: ;funcao print string ja usada
     je .done
     
     mov cx, 1
-    mov bl, 4
+    mov bl, 14
     mov ah, 09h ;printo um caracter usando 09h p sair com cor
     int 10h     ;interrupção de vídeo.
 
@@ -53,7 +53,7 @@ limpatela:
     int 10h
     apagalinha:
         mov al, 48
-        mov bl, 2
+        mov bl, 0
         mov cx, 1000
         mov ah, 09h
         int 10h ;printo 1000 chars brancos
@@ -77,7 +77,7 @@ start:
 
     mov ah, 0xb
     mov bh, 0
-    mov bl, 2
+    mov bl, 0
     int 10h     
 
     mov si, l ;comeco a printar as 4 strings

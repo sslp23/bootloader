@@ -54,7 +54,7 @@ ident: ;printar o 10
     mov bl, 4
     mov ah, 09h
     int 10h
-    inc dl
+    inc dl ;aqqa
     mov ah, 02h
     int 10h
     mov al, '0'
@@ -62,6 +62,7 @@ ident: ;printar o 10
     mov bl, 4
     mov ah, 09h
     int 10h
+    mov al, 58
     jmp bid
 
 start:
@@ -70,6 +71,7 @@ start:
 	mov es, ax
 	xor bx, bx
 
+	mov [c], al
     restart:
 	mov ah, 0
 	mov al, 12h
@@ -83,7 +85,9 @@ start:
     mov bh, 0
     mov bl, 2
     int 10h
-	mov [c], al
+    mov al, [c]
+    add al, al
+    mov [c], al
 
 	mov dh, 10
 	mov dl, 0

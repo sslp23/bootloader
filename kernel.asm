@@ -7,6 +7,34 @@ p1 db 0 ;vao verificar se p1==21
 p2 db 0
 eg db 0 ;verifica se ja acabou o jogo
 
+sp1 db 'Player 1: ', 0, 0, 0
+sp2 db 'Player 2: ', 0, 0, 0
+wp2 db 'Player 2 wins!', 0, 0, 0
+wp1 db 'Player 1 wins!', 0, 0, 0
+e db 'Its a draw!', 0, 0, 0
+rst db 'Restart? Press 1', 0, 0, 0
+
+
+print_string: ;funcao print string ja usada
+    lodsb       ;carrega uma letra de si em al e passa para o próximo caractere
+    cmp al, 0   ;chegou no final? (equivalente a um \0)
+    je .done
+    
+    mov cx, 1
+    mov bl, 14
+    mov ah, 09h ;printo um caracter usando 09h p sair com cor
+    int 10h     ;interrupção de vídeo.
+
+    inc dl
+    mov ah, 02h ;reposiciono o cursor
+    int 10h
+
+    jmp print_string
+ 
+    .done:
+        ret
+
+
 putchar: ;usado pra debugar
     cmp al, 58
     je ident
@@ -40,10 +68,15 @@ start:
 	xor ax, ax
 	mov ds, ax
 	mov es, ax
+	xor bx, bx
 
+    restart:
 	mov ah, 0
 	mov al, 12h
 	int 10h ;modo de video
+
+	mov [p1], ah
+    mov [p2], ah
 
 	xor dx, dx
     mov ah, 0xb
@@ -51,15 +84,23 @@ start:
     mov bl, 2
     int 10h
 	mov [c], al
-;	mov bl, 13
-;	div bl
-;	mov al, ah
-;	add al, 48
-;	call putchar
 
+	mov dh, 10
+	mov dl, 0
+	mov ah, 02h
+	int 10h
+	mov si, sp2
+	call print_string
+	mov dh, 19
+	mov dl, 0
+	mov ah, 02h
+	int 10h
+	mov si, sp1
+	call print_string
+
+	xor dx, dx
+    xor cx, cx
     xor bl, bl
-    mov [p1], bl
-    mov [p2], bl
     xor bx, bx
     jmp game
 	jmp done
@@ -69,11 +110,14 @@ getchar: ; pego o comando
 	int 16h
 	ret
 
+;---------------------------------------------------tabuleiro-----------------------------
+
+;----------------------------------------------------------------------------------------------------
 scoreUpdateP1:;printa o score do P1
 	mov cx, 1
 	mov [save], bl
 	mov dh, 19
-    mov dl, 0
+    mov dl, 10
     mov ah, 02h
     int 10h;posicionando o cursor
     
@@ -106,7 +150,7 @@ scoreUpdateP2:;printa o score do P2
 	mov cx, 1
 	mov [save], bl
 	mov dh, 10
-    mov dl, 0
+    mov dl, 10
     mov ah, 02h
     int 10h;posicionando o cursor
     
@@ -159,7 +203,7 @@ game:
 	je printaCarta2; se al for igual a 'q', printar cartas do player 2
 	cmp al, 'w'
 	je p2END
-	jmp done  
+	jmp game 
 
 
 as:
@@ -695,23 +739,44 @@ p2val5: ;valor da carta
 
 ;-------------------------------------------------END P2------------------------------------------
 
-p1WIN:
-	mov dh, 0
+reset:
+	mov dh, 29
 	mov dl, 0
 	mov ah, 02h
 	int 10h
-	mov al, '1'
-	call putchar
-	jmp done
+	mov si, rst
+	call print_string
+	call getchar
+	cmp al, '1'
+	je restart
+	jmp reset
+
+p1WIN:
+	mov dh, 15
+	mov dl, 32
+	mov ah, 02h
+	int 10h
+	mov si, wp1
+	call print_string
+	jmp reset
 
 p2WIN:
-	mov dh, 0
-	mov dl, 0
+	mov dh, 15
+	mov dl, 32
 	mov ah, 02h
 	int 10h
-	mov al, '0'
-	call putchar
-	jmp done
+	mov si, wp2
+	call print_string
+	jmp reset
+
+draw:
+	mov dh, 15
+	mov dl, 34
+	mov ah, 02h
+	int 10h
+	mov si, e
+	call print_string
+	jmp reset
 
 mod1:
 	mov cl, 21
@@ -745,6 +810,7 @@ endgame:
 	cmp al, ah
 	jg p1WIN
 	jl p2WIN
+	je draw
 	jmp done
 
 done:

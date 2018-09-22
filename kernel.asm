@@ -1,4 +1,4 @@
-org 0x7e00
+org 0x8600
 jmp 0x0000:start
 
 save db 0

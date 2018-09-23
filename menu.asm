@@ -8,6 +8,17 @@ s dw '    XXXX   Are you ready?     XXXX', 0, 0, 0
 w dw '1. Play', 0, 0, 0
 r dw '2. Instructions', 0, 0, 0
 
+;instrucoes
+;instrucoes
+i1 dw 'PLAYER 1:  ', 0, 0, 0
+i2 dw 'Hit: PRESS A  ', 0, 0, 0
+i3 dw 'Stand: PRESS S ', 0, 0, 0
+i4 dw 'PLAYER 2:  ', 0, 0, 0
+i6 dw 'Stand: PRESS W', 0, 0, 0
+i5 dw 'Hit: PRESS Q', 0, 0, 0
+i7 dw  '   PRESS 1 TO START A NEW GAME  ', 0, 0, 0
+i8 dw '         INSTRUCTIONS   ',0, 0, 0
+
 
 save db 0
 
@@ -18,7 +29,7 @@ print_string: ;funcao print string ja usada
     je .done
     
     mov cx, 1
-    mov bl, 7
+    mov bl, 14
     mov ah, 09h ;printo um caracter usando 09h p sair com cor
     int 10h     ;interrupção de vídeo.
 
@@ -86,13 +97,145 @@ print_string: ;funcao print string ja usada
 		call plinha
 	
 
-		mov al, 0
-		mov cx, 100
-		mov dx, 100
-		mov ah, 86h
-		int 15h
+		jmp opcao 
 
-		jmp jogo
+opcao:
+	call getchar
+	cmp al, '1'
+	je jogo
+	cmp al, '2'
+	je instructions
+	jmp opcao
+
+
+getchar: ; pego o comando
+	mov ah, 0h
+	int 16h
+	ret
+
+instructions:
+	call limpatela
+	mov dh, 0
+	mov dl, 5
+	mov ah, 02h
+	int 10h
+	mov si, i8
+	call ps
+	
+	mov dh, 2
+	mov dl, 0
+	mov ah, 02h
+	int 10h
+	mov si, i1
+	call ps
+	mov dh, 3
+	mov dl, 0
+	mov ah, 02h
+	int 10h
+	mov si, i2
+	call ps
+	mov dh, 4
+	mov dl, 0
+	mov ah, 02h
+	int 10h
+	mov si, i3
+	call ps
+	
+
+	mov dh, 14
+	mov dl, 0
+	mov ah, 02h
+	int 10h
+	mov si, i4
+	call ps
+	mov dh, 15
+	mov dl, 0
+	mov ah, 02h
+	int 10h
+	mov si, i5
+	call ps
+	mov dh, 16
+	mov dl, 0
+	mov ah, 02h
+	int 10h
+	mov si, i6
+	call ps
+	
+	ints:
+	mov dh, 20
+	mov dl, 3
+	mov ah, 02h
+	int 10h
+	mov si, i7
+	call ps
+	
+	
+	call getchar
+	cmp al, '1'
+	je jogo
+	
+	mov al, 0
+    mov cx, 10
+    mov dx, 10
+    mov ah, 86h
+    int 15h
+
+    mov dh, 20
+    mov dl, 3
+    mov ah, 02h
+    int 10h
+	mov al, 48
+	mov bl, 0
+	mov cx, 1000
+	mov ah, 09h
+	int 10h
+
+	mov al, 0
+    mov cx, 10
+    mov dx, 10
+    mov ah, 86h
+    int 15h
+
+	jmp ints
+
+ps: ;funcao print string ja usada
+    lodsb       ;carrega uma letra de si em al e passa para o próximo caractere
+    cmp al, 0   ;chegou no final? (equivalente a um \0)
+    je done1
+    
+    mov cx, 1
+    mov bl, 14
+    mov ah, 09h ;printo um caracter usando 09h p sair com cor
+    int 10h     ;interrupção de vídeo.
+
+    inc dl
+    mov ah, 02h ;reposiciono o cursor
+    int 10h
+
+    jmp ps
+ 
+    done1:
+        ret
+
+limpatela:
+    mov dh, 0
+    mov dl, 0
+    mov ah, 02h ; posiciono o cursor no topo
+    int 10h
+    apagalinha:
+        mov al, 48
+        mov bl, 0
+        mov cx, 1000
+        mov ah, 09h
+        int 10h ;printo 1000 chars brancos
+        inc dh
+        mov ah, 02h
+        int 10h ;reposiciono o cursor em uma linha abaixo
+        cmp dh, 1000
+        je clean
+        jmp apagalinha
+    clean:
+        ret
 
 jogo:
 ;Setando a posição do disco onde kernel.asm foi armazenado(ES:BX = [0x500:0x0])

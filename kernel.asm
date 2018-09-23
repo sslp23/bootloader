@@ -106,7 +106,7 @@ start:
     xor cx, cx
     xor bl, bl
     xor bx, bx
-    jmp game
+    jmp tabuleiro
 	jmp done
 
 getchar: ; pego o comando
@@ -115,7 +115,134 @@ getchar: ; pego o comando
 	ret
 
 ;---------------------------------------------------tabuleiro-----------------------------
+tabuleiro:
+	mov cx, 30
+	mov dx, 340
+	mov bx, dx
+	add bx, 120
+	call tab
+	mov dx, 340
+	mov cx, 130
+	call tab2
+	mov dx, 340
+	mov cx, 230
+	call tab3
+	mov dx, 340
+	mov cx, 330
+	call tab4
+	mov dx, 340
+	mov cx, 430
+	call tab5
 
+	mov cx, 30
+	mov dx, 30
+	mov bx, dx
+	add bx, 120
+	call tab
+	mov dx, 30
+	mov cx, 130
+	call tab2
+	mov dx, 30
+	mov cx, 230
+	call tab3
+	mov dx, 30
+	mov cx, 330
+	call tab4
+	mov dx, 30
+	mov cx, 430
+	call tab5
+	xor bx, bx
+	jmp game	
+
+tab: ;primeira carta do player1
+	cmp dx, bx
+	je bt1
+	mov ah, 0Ch
+	mov al, 14
+	int 10h
+	inc cx
+	cmp cx, 110
+	je setT
+	jmp tab
+	bt1:
+		ret
+
+setT: ;reseta a coordenada x da primeira carta
+	mov cx, 30	
+	inc dx
+	jmp tab
+
+tab2: ;primeira carta do player1
+	cmp dx, bx
+	je bt2
+	mov ah, 0Ch
+	mov al, 14
+	int 10h
+	inc cx
+	cmp cx, 210
+	je setT2
+	jmp tab2
+	bt2:
+		ret
+
+setT2: ;reseta a coordenada x da primeira carta
+	mov cx, 130	
+	inc dx
+	jmp tab2
+
+tab3: ;primeira carta do player1
+	cmp dx, bx
+	je bt3
+	mov ah, 0Ch
+	mov al, 14
+	int 10h
+	inc cx
+	cmp cx, 310
+	je setT3
+	jmp tab3
+	bt3:
+		ret
+
+setT3: ;reseta a coordenada x da primeira carta
+	mov cx, 230	
+	inc dx
+	jmp tab3
+
+tab4: ;primeira carta do player1
+	cmp dx, bx
+	je bt4
+	mov ah, 0Ch
+	mov al, 14
+	int 10h
+	inc cx
+	cmp cx, 410
+	je setT4
+	jmp tab4
+	bt4:
+		ret
+
+setT4: ;reseta a coordenada x da primeira carta
+	mov cx, 330	
+	inc dx
+	jmp tab4
+
+tab5: ;primeira carta do player1
+	cmp dx, bx
+	je bt5
+	mov ah, 0Ch
+	mov al, 14
+	int 10h
+	inc cx
+	cmp cx, 510
+	je setT5
+	jmp tab5
+	bt5:
+		ret
+
+setT5: ;reseta a coordenada x da primeira carta
+	mov cx, 430	
+	inc dx
+	jmp tab5
 ;----------------------------------------------------------------------------------------------------
 scoreUpdateP1:;printa o score do P1
 	mov cx, 1

@@ -2,8 +2,8 @@ org 0x7e00
 jmp 0x0000:start
 
 
-l dw '    XXXX The Black Jack Game  XXXX', 0, 0, 0
-s dw '    XXXX   Are you ready?     XXXX', 0, 0, 0
+l dw 'XXXX The Black Jack Game  XXXX', 0, 0, 0
+s dw '     XXXX   Are you ready?     XXXX', 0, 0, 0
 
 w dw '1. Play', 0, 0, 0
 r dw '2. Instructions', 0, 0, 0
@@ -67,16 +67,12 @@ print_string: ;funcao print string ja usada
 		mov bl, 0
 		int 10h 
 
-		call plinha
-		call plinha
-		call plinha
-		call plinha
-		call plinha
-		call plinha
-		call plinha    
-		call plinha
-		call plinha
-		call plinha
+		
+		mov ah, 02h
+		mov bh, 0
+		mov dh, 12
+		mov dl, 5
+		int 10h
 
 		mov si, l ;comeco a printar as 4 strings
 		call print_string

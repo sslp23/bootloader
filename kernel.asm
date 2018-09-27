@@ -72,10 +72,11 @@ start:
 	xor bx, bx
 
 	mov [c], al
-    restart:
+    restart: ;no restart, ligo o modo de video novamente pra limpar a tela
 	mov ah, 0
-	mov al, 12h
-	int 10h ;modo de video
+	mov al, 13h ;movo de video
+	call mf
+	int 10h
 
 	mov [p1], ah
     mov [p2], ah
@@ -920,6 +921,10 @@ mod2:
 	sub al, cl
 	mov [p2], al
 	jmp back2
+
+mf:
+	mov al, 12h
+	ret
 
 endgame:
 	mov al, [p1]

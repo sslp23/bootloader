@@ -2,8 +2,8 @@ org 0x7e00
 jmp 0x0000:start
 
 
-l dw 'XXXX The Black Jack Game  XXXX', 0, 0, 0
-s dw '     XXXX   Are you ready?     XXXX', 0, 0, 0
+l dw 'XXXX The Black Jack Game 2.0 XXXX', 0, 0, 0
+s dw '     XXXX    Are you ready?     XXXX', 0, 0, 0
 
 w dw '1. Play', 0, 0, 0
 r dw '2. Instructions', 0, 0, 0
@@ -18,7 +18,10 @@ i6 dw 'Stand: PRESS W', 0, 0, 0
 i5 dw 'Hit: PRESS Q', 0, 0, 0
 i7 dw  '   PRESS 1 TO START A NEW GAME  ', 0, 0, 0
 i8 dw '         INSTRUCTIONS   ',0, 0, 0
-
+i9 dw 'Black Jack Game 2.0 is a type of known', 0, 0, 0
+i10 dw 'Black Jack but with one principal change:', 0, 0, 0
+i11 dw '1. The main idea is that will win the', 0, 0, 0
+i12 dw 'player who has the closest points of 21', 0, 0 ,0
 
 save db 0
 
@@ -71,7 +74,7 @@ print_string: ;funcao print string ja usada
 		mov ah, 02h
 		mov bh, 0
 		mov dh, 12
-		mov dl, 5
+		mov dl, 4
 		int 10h
 
 		mov si, l ;comeco a printar as 4 strings
@@ -117,6 +120,9 @@ instructions:
 	int 10h
 	mov si, i8
 	call ps
+
+	
+	
 	
 	mov dh, 2
 	mov dl, 0
@@ -156,9 +162,44 @@ instructions:
 	int 10h
 	mov si, i6
 	call ps
+
+
+	mov dh, 18
+	mov dl, 0
+	mov ah, 02h
+	int 10h
+	mov si, i9
+	call ps2
+	
+	
+	mov dh, 19
+	mov dl, 0
+	mov ah, 02h
+	int 10h
+	mov si, i10
+	call ps2
+	
+	
+	mov dh, 20
+	mov dl, 0
+	mov ah, 02h
+	int 10h
+	mov si, i11
+	call ps2
+	
+
+	mov dh, 21
+	mov dl, 0
+	mov ah, 02h
+	int 10h
+	mov si, i12
+	call ps2
+
+
+	
 	
 	ints:
-	mov dh, 20
+	mov dh, 23
 	mov dl, 3
 	mov ah, 02h
 	int 10h
@@ -211,6 +252,25 @@ ps: ;funcao print string ja usada
     jmp ps
  
     done1:
+        ret
+
+ps2: ;funcao print string ja usada
+    lodsb       ;carrega uma letra de si em al e passa para o próximo caractere
+    cmp al, 0   ;chegou no final? (equivalente a um \0)
+    je done2
+    
+    mov cx, 1
+    mov bl, 4
+    mov ah, 09h ;printo um caracter usando 09h p sair com cor
+    int 10h     ;interrupção de vídeo.
+
+    inc dl
+    mov ah, 02h ;reposiciono o cursor
+    int 10h
+
+    jmp ps2
+ 
+    done2:
         ret
 
 limpatela:
